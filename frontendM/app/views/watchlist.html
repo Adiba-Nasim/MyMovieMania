@@ -1,0 +1,40 @@
+<!-- frontend/app/views/watchlist.html -->
+
+<div class="container" style="padding-top:36px">
+    <div class="section-header" style="margin-bottom:28px">
+        <h2 style="font-size:1.8rem">
+            <i class="fas fa-clock" style="color:var(--gold)"></i> My Watchlist
+        </h2>
+        <span style="color:var(--text-muted); font-size:14px">{{ items.length }} film{{ items.length !== 1 ? 's' : '' }}</span>
+    </div>
+
+    <div class="spinner" ng-if="loading"><div class="spinner-ring"></div></div>
+
+    <div ng-if="!loading">
+        <p ng-if="!items.length" style="color:var(--text-muted); text-align:center; padding:60px 0">
+            Your watchlist is empty. <a href="#!/movies">Discover films to add →</a>
+        </p>
+
+        <div class="wl-grid">
+            <div class="wl-card" ng-repeat="item in items">
+                <img class="wl-poster"
+                     ng-src="{{ posterUrl(item.poster_path) }}"
+                     alt="{{ item.movie_title }}">
+                <div class="wl-actions">
+                    <a class="btn btn-primary" href="#!/movie/{{ item.tmdb_id }}" style="font-size:12px">
+                        View Film
+                    </a>
+                    <button class="btn btn-outline" ng-click="markWatched(item)"
+                            style="font-size:12px; color:var(--green); border-color:var(--green)">
+                        <i class="fas fa-check"></i> Mark Watched
+                    </button>
+                    <button class="btn btn-ghost" ng-click="remove(item.tmdb_id)"
+                            style="font-size:12px; color:var(--red)">
+                        <i class="fas fa-times"></i> Remove
+                    </button>
+                </div>
+                <div class="wl-title">{{ item.movie_title }}</div>
+            </div>
+        </div>
+    </div>
+</div>

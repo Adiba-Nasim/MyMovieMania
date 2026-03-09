@@ -1,0 +1,164 @@
+<!-- frontend/app/views/lists.html -->
+
+<div class="container" style="padding-top:36px">
+
+    <!-- ── MY LISTS view ── -->
+    <div ng-hide="activeList">
+        <div class="section-header" style="margin-bottom:28px">
+            <h2 style="font-size:1.8rem">
+                <i class="fas fa-list" style="color:var(--gold)"></i> My Lists
+            </h2>
+            <button class="btn btn-primary" ng-click="showForm = !showForm">
+                <i class="fas fa-plus"></i> New List
+            </button>
+        </div>
+
+        <!-- Create list form -->
+        <div class="review-form" ng-show="showForm" style="margin-bottom:28px">
+            <h3>Create a New List</h3>
+            <div class="form-group" style="margin-bottom:12px">
+                <label style="font-size:13px; color:var(--text-muted); display:block; margin-bottom:6px">Title *</label>
+                <input type="text" ng-model="newList.title" placeholder="e.g. Best Sci-Fi of the 90s">
+            </div>
+            <div class="form-group" style="margin-bottom:12px">
+                <label style="font-size:13px; color:var(--text-muted); display:block; margin-bottom:6px">Description</label>
+                <textarea ng-model="newList.description" rows="2" placeholder="Describe your list…"></textarea>
+            </div>
+            <div style="display:flex; gap:16px; align-items:center; margin-bottom:16px">
+                <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer">
+                    <input type="checkbox" ng-model="newList.is_public" style="width:auto">
+                    Public list
+                </label>
+            </div>
+            <div style="display:flex; gap:10px">
+                <button class="btn btn-primary" ng-click="createList()">Create List</button>
+                <button class="btn btn-outline" ng-click="showForm = false">Cancel</button>
+            </div>
+        </div>
+
+        <!-- Lists grid -->
+        <div class="list-grid" ng-show="lists.length">
+            <div class="list-card" ng-repeat="l in lists" style="cursor:pointer" ng-click="openList(l)">
+                <!-- Mini posters preview -->
+                <div style="display:flex; gap:4px; margin-bottom:12px; height:60px; overflow:hidden; border-radius:6px" ng-show="l.preview && l.preview.length">
+                    <img ng-repeat="p in l.preview | limitTo:4"
+                         ng-src="{{ posterUrl(p) }}"
+                         style="width:44px; height:60px; object-fit:cover; border-radius:4px; flex-shrink:0"
+                         alt="">
+                </div>
+                <div ng-hide="l.preview && l.preview.length"
+                     style="height:60px; display:flex; align-items:center; justify-content:center; background:var(--surface-2); border-radius:6px; margin-bottom:12px">
+                    <i class="fas fa-film" style="font-size:1.5rem; color:var(--text-dim)"></i>
+                </div>
+
+                <div class="list-card-title">
+                    {{ l.title }}
+                    <i class="fas fa-lock" style="color:var(--text-dim); font-size:12px; margin-left:6px" ng-show="!l.is_public"></i>
+                </div>
+                <div class="list-card-desc" ng-show="l.description">{{ l.description }}</div>
+                <div class="list-card-meta" style="display:flex; justify-content:space-between; align-items:center; margin-top:12px">
+                    <span>{{ l.item_count || 0 }} film{{ l.item_count !== 1 ? 's' : '' }}</span>
+                    <button class="btn btn-ghost"
+                            style="padding:4px 10px; font-size:12px; color:var(--red)"
+                            ng-click="deleteList(l.id, $event)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <p ng-hide="lists.length" style="color:var(--text-muted); text-align:center; padding:60px 0">
+            No lists yet. Create your first collection!
+        </p>
+    </div>
+
+    <!-- ── LIST DETAIL view ── -->
+    <div ng-show="activeList">
+
+        <!-- Header -->
+        <div style="display:flex; align-items:flex-start; gap:16px; margin-bottom:28px; flex-wrap:wrap">
+            <button class="btn btn-outline" ng-click="closeList()" style="flex-shrink:0">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
+            <div style="flex:1">
+                <h2 style="font-size:1.8rem; margin:0 0 4px">{{ activeList.title }}</h2>
+                <p style="color:var(--text-muted); margin:0" ng-show="activeList.description">{{ activeList.description }}</p>
+                <p style="color:var(--text-dim); font-size:13px; margin:6px 0 0">
+                    {{ activeList.items.length }} film{{ activeList.items.length !== 1 ? 's' : '' }}
+                    <span ng-show="!activeList.is_public"> · <i class="fas fa-lock"></i> Private</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Add movie search -->
+        <div style="background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px; margin-bottom:28px">
+            <h4 style="margin:0 0 14px; color:var(--text-primary)"><i class="fas fa-plus-circle" style="color:var(--gold)"></i> Add a Film</h4>
+            <div style="display:flex; gap:10px">
+                <div style="position:relative; flex:1">
+                    <i class="fas fa-search" style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--text-dim)"></i>
+                    <input type="text"
+                           ng-model="addQuery"
+                           ng-change="onAddQueryChange()"
+                           placeholder="Search for a film to add…"
+                           style="padding-left:40px"
+                           autocomplete="off">
+                </div>
+            </div>
+
+            <!-- Search results dropdown -->
+            <div ng-show="addResults.length" style="margin-top:12px; border:1px solid var(--border); border-radius:8px; overflow:hidden; max-height:320px; overflow-y:auto">
+                <div ng-repeat="m in addResults"
+                     style="display:flex; align-items:center; gap:12px; padding:10px 14px; cursor:pointer; transition:background 0.15s; border-bottom:1px solid var(--border)"
+                     ng-style="{'background': $index % 2 === 0 ? 'var(--surface)' : 'var(--surface-2)'}"
+                     ng-mouseenter="this.style.background='var(--surface-hover)'"
+                     ng-click="addToList(m)">
+                    <img ng-src="{{ m.poster_path ? 'https://image.tmdb.org/t/p/w92' + m.poster_path : '' }}"
+                         style="width:36px; height:54px; object-fit:cover; border-radius:4px; flex-shrink:0; background:var(--surface-2)"
+                         alt="">
+                    <div style="flex:1; min-width:0">
+                        <div style="font-weight:600; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ m.title }}</div>
+                        <div style="font-size:12px; color:var(--text-muted)">{{ m.release_date | releaseYear }}
+                            <span ng-show="m.vote_average"> · ★ {{ m.vote_average | number:1 }}</span>
+                        </div>
+                    </div>
+                    <span ng-show="isInList(m.id)" style="color:var(--gold); font-size:12px"><i class="fas fa-check"></i> Added</span>
+                    <button class="btn btn-primary" style="padding:5px 14px; font-size:12px; flex-shrink:0"
+                            ng-hide="isInList(m.id)">
+                        <i class="fas fa-plus"></i> Add
+                    </button>
+                </div>
+            </div>
+            <p ng-show="addSearching" style="color:var(--text-muted); font-size:13px; margin-top:10px">
+                <i class="fas fa-spinner fa-spin"></i> Searching…
+            </p>
+        </div>
+
+        <!-- Films in list -->
+        <div ng-show="activeList.items.length">
+            <h4 style="margin-bottom:16px; color:var(--text-muted); font-size:13px; text-transform:uppercase; letter-spacing:1px">Films in this list</h4>
+            <div class="wl-grid">
+                <div class="wl-card" ng-repeat="item in activeList.items">
+                    <img class="wl-poster"
+                         ng-src="{{ posterUrl(item.poster_path) }}"
+                         alt="{{ item.movie_title }}">
+                    <div class="wl-actions">
+                        <a class="btn btn-primary" href="#!/movie/{{ item.tmdb_id }}" style="font-size:12px">
+                            View Film
+                        </a>
+                        <button class="btn btn-ghost" ng-click="removeFromList(item.tmdb_id)"
+                                style="font-size:12px; color:var(--red)">
+                            <i class="fas fa-times"></i> Remove
+                        </button>
+                    </div>
+                    <div class="wl-title">{{ item.movie_title }}</div>
+                </div>
+            </div>
+        </div>
+
+        <p ng-hide="activeList.items.length" style="color:var(--text-muted); text-align:center; padding:40px 0">
+            <i class="fas fa-film" style="font-size:2rem; display:block; margin-bottom:12px; color:var(--text-dim)"></i>
+            No films yet — search above to add some!
+        </p>
+    </div>
+
+</div>

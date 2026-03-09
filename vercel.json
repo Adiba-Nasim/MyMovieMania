@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/*.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "frontendM/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    { "src": "/api/auth/(.*)",    "dest": "/api/auth.js?action=$1"    },
+    { "src": "/api/movies/(.*)",  "dest": "/api/movies.js?action=$1"  },
+    { "src": "/api/library/(.*)", "dest": "/api/library.js?action=$1" },
+    { "src": "/api/lists/(.*)",   "dest": "/api/lists.js?action=$1"   },
+    { "src": "/(.*)",             "dest": "/frontendM/$1"             }
+  ]
+}

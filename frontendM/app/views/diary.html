@@ -1,0 +1,34 @@
+<!-- ============ frontend/app/views/diary.html ============ -->
+
+<div class="container" style="padding-top:36px">
+    <div class="section-header" style="margin-bottom:28px">
+        <h2 style="font-size:1.8rem"><i class="fas fa-book-open" style="color:var(--gold)"></i> My Film Diary</h2>
+    </div>
+
+    <div class="spinner" ng-if="loading"><div class="spinner-ring"></div></div>
+
+    <div ng-if="!loading">
+        <p ng-if="!reviews.length" style="color:var(--text-muted); text-align:center; padding:60px 0">
+            Your diary is empty. <a href="#!/movies">Start watching films →</a>
+        </p>
+
+        <div class="diary-item" ng-repeat="r in reviews">
+            <img class="diary-poster" ng-src="{{ posterUrl(r.poster_path) }}" alt="{{ r.movie_title }}">
+            <div class="diary-info" style="flex:1">
+                <div class="diary-title">
+                    <a href="#!/movie/{{ r.tmdb_id }}">{{ r.movie_title }}</a>
+                    <i class="fas fa-heart" style="color:var(--red); margin-left:8px" ng-if="r.liked == 1"></i>
+                </div>
+                <div class="diary-date">{{ r.created_at | date:'MMMM d, y' }}</div>
+                <div style="color:var(--gold); font-size:14px; margin-bottom:8px" ng-if="r.rating">
+                    ★ {{ r.rating }} / 5
+                </div>
+                <p class="diary-review-text" ng-if="r.review_text">{{ r.review_text }}</p>
+            </div>
+            <button class="btn btn-danger" style="align-self:flex-start"
+                    ng-click="deleteReview(r.id)">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,239 @@
+<!-- frontend/app/views/movie-detail.html -->
+
+<!-- Loading -->
+<div ng-show="loading" class="spinner" style="padding:80px 0">
+    <div class="spinner-ring"></div>
+</div>
+
+<!-- Error -->
+<div ng-show="error" style="text-align:center; padding:60px 20px; color:var(--text-muted)">
+    <i class="fas fa-exclamation-circle" style="font-size:2rem; color:var(--red); display:block; margin-bottom:12px"></i>
+    <p>{{ error }}</p>
+    <a href="#!/" class="btn btn-outline" style="margin-top:16px; display:inline-flex">← Go Home</a>
+</div>
+
+<!-- ══════════ MAIN CONTENT ══════════ -->
+<div ng-show="!loading && movie">
+
+    <!-- HERO BACKDROP -->
+    <div class="detail-hero">
+        <div class="detail-backdrop"
+             ng-style="{'background-image': 'url(https://image.tmdb.org/t/p/original' + movie.backdrop_path + ')'}">
+        </div>
+        <div class="detail-gradient"></div>
+
+        <div class="detail-main">
+            <!-- Poster -->
+            <img class="detail-poster"
+                 ng-src="{{ posterUrl(movie.poster_path, 'w500') }}"
+                 alt="{{ movie.title }}">
+
+            <!-- Info -->
+            <div class="detail-info">
+                <h1>{{ movie.title }}</h1>
+                <div class="detail-tagline" ng-show="movie.tagline">"{{ movie.tagline }}"</div>
+
+                <div class="detail-meta">
+                    <div class="detail-meta-item"><strong>{{ movie.release_date | releaseYear }}</strong></div>
+                    <div class="detail-meta-item">{{ movie.runtime | runtime }}</div>
+                    <div class="detail-meta-item">
+                        <span ng-repeat="g in movie.genres | limitTo:3">{{ g.name }}<span ng-hide="$last">, </span></span>
+                    </div>
+                    <div class="detail-meta-item" ng-show="movie.original_language">
+                        {{ movie.original_language | uppercase }}
+                    </div>
+                </div>
+
+                <div class="detail-rating-badge">
+                    <i class="fas fa-star"></i>
+                    {{ movie.vote_average | number:1 }} / 10
+                    <span style="font-size:12px; color:rgba(255,255,255,0.5); font-weight:400">
+                        ({{ movie.vote_count | number }} votes)
+                    </span>
+                </div>
+
+                <!-- Actions — logged in -->
+                <div class="detail-actions" ng-show="isLoggedIn()">
+                    <button class="btn btn-icon watched"
+                            ng-class="{active: isWatched}"
+                            ng-click="toggleWatched()"
+                            title="{{ isWatched ? 'Remove from Watched' : 'Mark as Watched' }}">
+                        <i class="fas fa-eye"></i>
+                    </button>
+
+                    <button class="btn btn-icon"
+                            ng-class="{active: inWatchlist}"
+                            ng-click="toggleWatchlist()"
+                            title="{{ inWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist' }}">
+                        <i class="fas fa-clock"></i>
+                    </button>
+
+                    <button class="btn btn-outline" ng-click="openReviewModal()">
+                        <i class="fas fa-pen"></i> Write Review
+                    </button>
+
+                    <a ng-show="trailer"
+                       href="https://youtube.com/watch?v={{ trailer.key }}"
+                       target="_blank"
+                       class="btn btn-ghost">
+                        <i class="fab fa-youtube"></i> Trailer
+                    </a>
+                </div>
+
+                <!-- Actions — logged out -->
+                <div class="detail-actions" ng-hide="isLoggedIn()">
+                    <a href="#!/login" class="btn btn-primary">
+                        <i class="fas fa-user"></i> Sign in to track this film
+                    </a>
+                    <a ng-show="trailer"
+                       href="https://youtube.com/watch?v={{ trailer.key }}"
+                       target="_blank"
+                       class="btn btn-ghost">
+                        <i class="fab fa-youtube"></i> Trailer
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════ REVIEW MODAL ══════ -->
+    <div class="modal-backdrop" ng-show="showReviewForm" ng-click="closeReviewModal()"></div>
+    <div class="modal-box" ng-show="showReviewForm">
+        <div class="modal-header">
+            <h3><i class="fas fa-pen" style="color:var(--gold); margin-right:8px"></i>Review "{{ movie.title }}"</h3>
+            <button class="modal-close" ng-click="closeReviewModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="modal-body">
+            <!-- Star rating picker -->
+            <div class="form-group">
+                <label style="font-size:12px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:10px">
+                    Your Rating
+                </label>
+                <div class="star-picker">
+                    <button class="star-btn"
+                            ng-repeat="r in [0.5,1,1.5,2,2.5,3,3.5,4,4.5,5]"
+                            ng-class="{active: newReview.rating === r}"
+                            ng-click="newReview.rating = r"
+                            title="{{ r }} stars">
+                        {{ r }}★
+                    </button>
+                </div>
+                <div style="color:var(--gold); font-size:1.4rem; margin-top:8px; letter-spacing:2px">
+                    <span ng-repeat="n in [1,2,3,4,5]">
+                        <span ng-show="n <= newReview.rating">★</span>
+                        <span ng-show="n > newReview.rating && (n - 0.5) <= newReview.rating">½</span>
+                        <span ng-show="n > newReview.rating && (n - 0.5) > newReview.rating" style="color:var(--text-dim)">☆</span>
+                    </span>
+                    <span style="font-size:14px; color:var(--text-muted); margin-left:8px">{{ newReview.rating }} / 5</span>
+                </div>
+            </div>
+
+            <!-- Review text -->
+            <div class="form-group" style="margin-top:20px">
+                <label style="font-size:12px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:8px">
+                    Your Review <span style="color:var(--text-dim)">(optional)</span>
+                </label>
+                <textarea ng-model="newReview.review_text"
+                          rows="5"
+                          placeholder="What did you think? Share your thoughts..."
+                          style="width:100%; resize:vertical"></textarea>
+            </div>
+
+            <!-- Loved it checkbox -->
+            <div style="display:flex; align-items:center; gap:10px; margin-top:14px; cursor:pointer"
+                 ng-click="newReview.liked = !newReview.liked">
+                <div style="width:22px; height:22px; border-radius:50%; border:2px solid;
+                            display:flex; align-items:center; justify-content:center; font-size:11px; flex-shrink:0"
+                     ng-style="newReview.liked ? {'border-color':'#e05c5c','background':'rgba(224,92,92,0.15)','color':'#e05c5c'} : {'border-color':'var(--border)','color':'var(--text-dim)'}">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <span style="font-size:14px" ng-style="newReview.liked ? {color:'#e05c5c'} : {color:'var(--text-muted)'}">
+                    I loved this film
+                </span>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-outline" ng-click="closeReviewModal()">Cancel</button>
+            <button class="btn btn-primary" ng-click="submitReview()">
+                <i class="fas fa-check"></i> Save Review
+            </button>
+        </div>
+    </div>
+
+    <!-- ══════ BODY ══════ -->
+    <div class="detail-body">
+        <p class="detail-overview">{{ movie.overview }}</p>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn" ng-class="{active: activeTab==='cast'}"    ng-click="activeTab='cast'">Cast</button>
+            <button class="tab-btn" ng-class="{active: activeTab==='reviews'}" ng-click="activeTab='reviews'">
+                Reviews ({{ reviews.length }})
+            </button>
+            <button class="tab-btn" ng-class="{active: activeTab==='similar'}" ng-click="activeTab='similar'">Similar</button>
+        </div>
+
+        <!-- Cast -->
+        <div ng-show="activeTab==='cast'">
+            <div class="cast-grid">
+                <div class="cast-card" ng-repeat="p in movie.credits.cast | limitTo:18">
+                    <img class="cast-avatar"
+                         ng-src="{{ p.profile_path ? 'https://image.tmdb.org/t/p/w185' + p.profile_path : 'https://via.placeholder.com/185x278?text=?' }}"
+                         alt="{{ p.name }}">
+                    <div class="cast-name">{{ p.name }}</div>
+                    <div class="cast-char">{{ p.character }}</div>
+                </div>
+            </div>
+            <p ng-show="!movie.credits.cast.length" style="color:var(--text-muted)">No cast info available.</p>
+        </div>
+
+        <!-- Reviews -->
+        <div ng-show="activeTab==='reviews'">
+            <p ng-show="!reviews.length" style="color:var(--text-muted); padding:20px 0">
+                No reviews yet.
+                <a ng-show="isLoggedIn()" ng-click="openReviewModal()" style="cursor:pointer">Be the first!</a>
+                <a ng-hide="isLoggedIn()" href="#!/login">Sign in to write one!</a>
+            </p>
+            <div class="review-card" ng-repeat="r in reviews">
+                <div class="review-header">
+                    <div class="review-avatar">{{ r.username ? r.username[0].toUpperCase() : '?' }}</div>
+                    <div>
+                        <div class="review-username">{{ r.username }}</div>
+                        <div class="review-date">{{ r.created_at | date:'mediumDate' }}</div>
+                    </div>
+                    <div class="review-rating" style="margin-left:auto" ng-show="r.rating">
+                        ★ {{ r.rating }} / 5
+                    </div>
+                    <i class="fas fa-heart" style="color:var(--red); margin-left:8px" ng-show="r.liked == 1"></i>
+                </div>
+                <p class="review-text" ng-show="r.review_text">{{ r.review_text }}</p>
+            </div>
+        </div>
+
+        <!-- Similar -->
+        <div ng-show="activeTab==='similar'">
+            <div class="movies-grid">
+                <a class="movie-card" href="#!/movie/{{ m.id }}"
+                   ng-repeat="m in movie.similar.results | limitTo:8">
+                    <img class="movie-poster"
+                         ng-src="{{ posterUrl(m.poster_path, 'w500') }}"
+                         alt="{{ m.title }}">
+                    <div class="movie-overlay">
+                        <div class="movie-overlay-title">{{ m.title }}</div>
+                    </div>
+                    <div class="movie-card-info">
+                        <div class="movie-card-title">{{ m.title }}</div>
+                        <div class="movie-card-year">{{ m.release_date | releaseYear }}</div>
+                    </div>
+                </a>
+            </div>
+            <p ng-show="!movie.similar.results.length" style="color:var(--text-muted)">No similar films found.</p>
+        </div>
+
+    </div>
+</div>

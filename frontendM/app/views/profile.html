@@ -1,0 +1,150 @@
+<!-- frontend/app/views/profile.html -->
+
+<div class="profile-header">
+    <div class="container">
+        <div class="profile-inner">
+
+            <!-- Avatar -->
+            <div class="profile-avatar-big">
+                {{ user.username ? user.username[0].toUpperCase() : '?' }}
+            </div>
+
+            <!-- Info / Edit form -->
+            <div style="flex:1">
+
+                <!-- View mode -->
+                <div ng-hide="editMode">
+                    <div class="profile-name">{{ user.username }}</div>
+                    <div class="profile-bio" style="margin-bottom:14px">
+                        {{ user.bio || 'No bio yet. Add one to tell the world about your taste in films!' }}
+                    </div>
+                    <button class="btn btn-outline" style="font-size:13px" ng-click="startEdit()">
+                        <i class="fas fa-pen"></i> Edit Profile
+                    </button>
+                </div>
+
+                <!-- Edit mode -->
+                <div ng-show="editMode" style="max-width:480px">
+                    <div style="margin-bottom:12px">
+                        <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:5px; text-transform:uppercase; letter-spacing:1px">Username</label>
+                        <input type="text" ng-model="editForm.username" placeholder="Username">
+                    </div>
+                    <div style="margin-bottom:16px">
+                        <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:5px; text-transform:uppercase; letter-spacing:1px">Bio</label>
+                        <textarea ng-model="editForm.bio" rows="3"
+                            placeholder="Tell the world about your taste in films..."
+                            style="resize:vertical"></textarea>
+                        <span style="font-size:11px; color:var(--text-dim)">{{ editForm.bio.length || 0 }} / 200 characters</span>
+                    </div>
+                    <div style="display:flex; gap:10px">
+                        <button class="btn btn-primary" ng-click="saveProfile()" ng-disabled="saving">
+                            <i class="fas fa-check"></i> {{ saving ? 'Saving...' : 'Save Changes' }}
+                        </button>
+                        <button class="btn btn-outline" ng-click="cancelEdit()">
+                            Cancel
+                        </button>
+                    </div>
+                    <div style="color:var(--green); font-size:13px; margin-top:10px" ng-show="saveSuccess">
+                        <i class="fas fa-check-circle"></i> Profile updated!
+                    </div>
+                    <div style="color:var(--red); font-size:13px; margin-top:10px" ng-show="saveError">
+                        <i class="fas fa-exclamation-circle"></i> {{ saveError }}
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="profile-stats" style="margin-top:16px">
+                    <div class="stat-item">
+                        <span class="stat-num">{{ user.stats.watched || 0 }}</span>
+                        <span class="stat-label">Films</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-num">{{ user.stats.reviews || 0 }}</span>
+                        <span class="stat-label">Reviews</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-num">{{ user.stats.watchlist || 0 }}</span>
+                        <span class="stat-label">Watchlist</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sign out -->
+            <div style="margin-left:auto; align-self:flex-start">
+                <button class="btn btn-danger" ng-click="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Sign Out
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- Recently Watched -->
+    <section class="section">
+        <div class="section-header">
+            <h2>Recently Watched</h2>
+            <a href="#!/diary" class="section-link">Full diary →</a>
+        </div>
+        <div class="movies-grid">
+            <a class="movie-card" href="#!/movie/{{ m.tmdb_id }}"
+               ng-repeat="m in watched | limitTo:8">
+                <img class="movie-poster" ng-src="{{ posterUrl(m.poster_path) }}" alt="{{ m.movie_title }}">
+                <div class="movie-card-info">
+                    <div class="movie-card-title">{{ m.movie_title }}</div>
+                </div>
+            </a>
+        </div>
+        <p ng-if="!watched.length" style="color:var(--text-muted)">
+            No films watched yet. <a href="#!/movies">Browse films →</a>
+        </p>
+    </section>
+
+    <!-- Recent Reviews -->
+    <section class="section">
+        <div class="section-header">
+            <h2>Recent Reviews</h2>
+            <a href="#!/diary" class="section-link">All reviews →</a>
+        </div>
+        <div class="diary-item" ng-repeat="r in reviews | limitTo:6">
+            <img class="diary-poster" ng-src="{{ posterUrl(r.poster_path) }}" alt="{{ r.movie_title }}">
+            <div class="diary-info">
+                <div class="diary-title">
+                    <a href="#!/movie/{{ r.tmdb_id }}">{{ r.movie_title }}</a>
+                    <i class="fas fa-heart" style="color:var(--red); margin-left:8px" ng-if="r.liked == 1"></i>
+                </div>
+                <div class="diary-date">{{ r.created_at | date:'mediumDate' }}</div>
+                <div style="color:var(--gold); font-size:13px; margin-bottom:6px" ng-if="r.rating">
+                    ★ {{ r.rating }} / 5
+                </div>
+                <p class="diary-review-text" ng-if="r.review_text">{{ r.review_text | limitTo:200 }}</p>
+            </div>
+        </div>
+        <p ng-if="!reviews.length" style="color:var(--text-muted)">
+            No reviews yet. <a href="#!/movies">Find a film to review →</a>
+        </p>
+    </section>
+
+    <!-- Quick links -->
+    <section class="section">
+        <div class="list-grid">
+            <a href="#!/watchlist" class="list-card">
+                <div class="list-card-title"><i class="fas fa-clock" style="color:var(--gold)"></i> My Watchlist</div>
+                <div class="list-card-desc">Films you plan to watch</div>
+                <div class="list-card-meta">{{ user.stats.watchlist || 0 }} films</div>
+            </a>
+            <a href="#!/diary" class="list-card">
+                <div class="list-card-title"><i class="fas fa-book-open" style="color:var(--gold)"></i> My Diary</div>
+                <div class="list-card-desc">All your reviews and ratings</div>
+                <div class="list-card-meta">{{ user.stats.reviews || 0 }} entries</div>
+            </a>
+            <a href="#!/lists" class="list-card">
+                <div class="list-card-title"><i class="fas fa-list" style="color:var(--gold)"></i> My Lists</div>
+                <div class="list-card-desc">Custom curated film collections</div>
+            </a>
+        </div>
+    </section>
+
+</div>

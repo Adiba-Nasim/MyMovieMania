@@ -1,0 +1,104 @@
+<!-- frontend/app/views/home.html -->
+
+<!-- HERO (first trending movie) -->
+<div class="hero" ng-if="trending[0]">
+    <div class="hero-bg"
+         ng-style="{'background-image': 'url(https://image.tmdb.org/t/p/original' + trending[0].backdrop_path + ')'}">
+    </div>
+    <div class="hero-gradient"></div>
+    <div class="hero-content">
+        <h1>{{ trending[0].title }}</h1>
+        <div class="hero-meta">
+            <span>{{ trending[0].release_date | releaseYear }}</span>
+            <span>★ {{ trending[0].vote_average | number:1 }}</span>
+        </div>
+        <p style="color:#ccc; margin-bottom:20px; font-size:14px; line-height:1.7; max-width:520px">
+            {{ trending[0].overview | limitTo:180 }}…
+        </p>
+        <a href="#!/movie/{{ trending[0].id }}" class="btn btn-primary">
+            <i class="fas fa-play"></i> View Film
+        </a>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- Trending -->
+    <section class="section">
+        <div class="section-header">
+            <h2>Trending This Week</h2>
+            <a href="#!/movies" class="section-link">See all →</a>
+        </div>
+        <div class="movies-grid">
+            <a class="movie-card" href="#!/movie/{{ m.id }}"
+               ng-repeat="m in trending | limitTo:8">
+                <img class="movie-poster"
+                     ng-src="{{ posterUrl(m.poster_path, 'w500') }}"
+                     alt="{{ m.title }}">
+                <div class="movie-overlay">
+                    <div class="movie-overlay-title">{{ m.title }}</div>
+                    <div class="movie-overlay-rating">★ {{ m.vote_average | number:1 }}</div>
+                </div>
+                <div class="movie-card-info">
+                    <div class="movie-card-title">{{ m.title }}</div>
+                    <div class="movie-card-year">{{ m.release_date | releaseYear }}</div>
+                    <div class="movie-card-rating">★ {{ m.vote_average | number:1 }}</div>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- Popular -->
+    <section class="section">
+        <div class="section-header">
+            <h2>Popular Right Now</h2>
+            <a href="#!/movies?tab=popular" class="section-link">See all →</a>
+        </div>
+        <div class="movies-grid">
+            <a class="movie-card" href="#!/movie/{{ m.id }}"
+               ng-repeat="m in popular | limitTo:6">
+                <img class="movie-poster"
+                     ng-src="{{ posterUrl(m.poster_path, 'w500') }}"
+                     alt="{{ m.title }}">
+                <div class="movie-overlay">
+                    <div class="movie-overlay-title">{{ m.title }}</div>
+                    <div class="movie-overlay-rating">★ {{ m.vote_average | number:1 }}</div>
+                </div>
+                <div class="movie-card-info">
+                    <div class="movie-card-title">{{ m.title }}</div>
+                    <div class="movie-card-year">{{ m.release_date | releaseYear }}</div>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- Upcoming -->
+    <section class="section">
+        <div class="section-header">
+            <h2>Coming Soon</h2>
+            <a href="#!/movies?tab=upcoming" class="section-link">See all →</a>
+        </div>
+        <div class="movies-grid">
+            <a class="movie-card" href="#!/movie/{{ m.id }}"
+               ng-repeat="m in upcoming | limitTo:6">
+                <img class="movie-poster"
+                     ng-src="{{ posterUrl(m.poster_path, 'w500') }}"
+                     alt="{{ m.title }}">
+                <div class="movie-overlay">
+                    <div class="movie-overlay-title">{{ m.title }}</div>
+                    <div class="movie-overlay-rating">{{ m.release_date | releaseYear }}</div>
+                </div>
+                <div class="movie-card-info">
+                    <div class="movie-card-title">{{ m.title }}</div>
+                    <div class="movie-card-year">{{ m.release_date | releaseYear }}</div>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- Spinner -->
+    <div class="spinner" ng-if="loading">
+        <div class="spinner-ring"></div>
+    </div>
+
+</div>

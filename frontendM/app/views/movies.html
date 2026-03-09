@@ -1,0 +1,50 @@
+<!-- frontend/app/views/movies.html -->
+
+<div class="container" style="padding-top:36px">
+
+    <div class="section-header" style="margin-bottom:24px">
+        <h2 style="font-size:2rem">Browse Films</h2>
+    </div>
+
+    <!-- Tab filters -->
+    <div class="tabs" style="margin-bottom:28px">
+        <button class="tab-btn" ng-class="{active: tab==='trending'}"   ng-click="setTab('trending')">Trending</button>
+        <button class="tab-btn" ng-class="{active: tab==='popular'}"    ng-click="setTab('popular')">Popular</button>
+        <button class="tab-btn" ng-class="{active: tab==='toprated'}"   ng-click="setTab('toprated')">Top Rated</button>
+        <button class="tab-btn" ng-class="{active: tab==='nowplaying'}" ng-click="setTab('nowplaying')">Now Playing</button>
+        <button class="tab-btn" ng-class="{active: tab==='upcoming'}"   ng-click="setTab('upcoming')">Upcoming</button>
+    </div>
+
+    <!-- Spinner -->
+    <div class="spinner" ng-if="loading"><div class="spinner-ring"></div></div>
+
+    <!-- Grid -->
+    <div class="movies-grid" ng-if="!loading">
+        <a class="movie-card" href="#!/movie/{{ m.id }}" ng-repeat="m in movies">
+            <img class="movie-poster"
+                 ng-src="{{ posterUrl(m.poster_path, 'w500') }}"
+                 alt="{{ m.title }}">
+            <div class="movie-overlay">
+                <div class="movie-overlay-title">{{ m.title }}</div>
+                <div class="movie-overlay-rating">★ {{ m.vote_average | number:1 }}</div>
+            </div>
+            <div class="movie-card-info">
+                <div class="movie-card-title">{{ m.title }}</div>
+                <div class="movie-card-year">{{ m.release_date | releaseYear }}</div>
+                <div class="movie-card-rating">★ {{ m.vote_average | number:1 }}</div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Pagination -->
+    <div style="display:flex; align-items:center; justify-content:center; gap:16px; margin:36px 0">
+        <button class="btn btn-outline" ng-click="prevPage()" ng-disabled="page<=1">
+            <i class="fas fa-chevron-left"></i> Prev
+        </button>
+        <span style="color:var(--text-muted); font-size:14px">Page {{ page }} / {{ totalPages }}</span>
+        <button class="btn btn-outline" ng-click="nextPage()" ng-disabled="page>=totalPages">
+            Next <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+
+</div>
