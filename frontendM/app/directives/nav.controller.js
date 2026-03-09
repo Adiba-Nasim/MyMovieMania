@@ -11,6 +11,10 @@ function($scope, $location, $timeout, $http, AuthService, API) {
 
     $scope.authService   = AuthService;
     $scope.searchQuery   = '';
+    $scope.menuOpen      = false;
+
+    $scope.toggleMenu = function() { $scope.menuOpen = !$scope.menuOpen; };
+    $scope.closeMenu  = function() { $scope.menuOpen = false; };
     $scope.liveResults   = [];
     $scope.showDropdown  = false;
     $scope.searching     = false;

@@ -23,7 +23,7 @@
     <nav class="navbar" ng-controller="NavCtrl">
         <a href="#!/" class="navbar-brand">My<span>Movie</span>Mania</a>
 
-        <!-- Live Search -->
+        <!-- Live Search (desktop) -->
         <div class="navbar-search" ng-class="{open: showDropdown}">
             <i class="fas fa-search search-icon" ng-hide="searching"></i>
             <i class="fas fa-spinner fa-spin search-icon" ng-show="searching"></i>
@@ -39,7 +39,6 @@
             <button class="search-clear" ng-show="searchQuery" ng-click="clearSearch()">
                 <i class="fas fa-times"></i>
             </button>
-
             <!-- Dropdown -->
             <div class="search-dropdown" ng-show="showDropdown">
                 <div ng-show="liveResults.length">
@@ -81,24 +80,52 @@
         <!-- Backdrop -->
         <div class="search-backdrop" ng-show="showDropdown" ng-click="closeDropdown()"></div>
 
-        <!-- Nav links -->
-        <div class="navbar-links">
-            <a href="#!/"       ng-class="{active: isActive('/')}">Home</a>
-            <a href="#!/movies" ng-class="{active: isActive('/movies')}">Films</a>
+        <!-- Mobile right side: search icon + hamburger -->
+        <div class="mobile-nav-right">
+            <a href="#!/search" class="mobile-search-btn">
+                <i class="fas fa-search"></i>
+            </a>
+            <button class="hamburger" ng-click="toggleMenu()" ng-class="{open: menuOpen}">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
 
-            <a href="#!/watchlist" ng-show="authService.isLoggedIn()" ng-class="{active: isActive('/watchlist')}">Watchlist</a>
-            <a href="#!/diary"     ng-show="authService.isLoggedIn()" ng-class="{active: isActive('/diary')}">Diary</a>
-            <a href="#!/lists"     ng-show="authService.isLoggedIn()" ng-class="{active: isActive('/lists')}">Lists</a>
-            <a href="#!/profile"   ng-show="authService.isLoggedIn()" ng-class="{active: isActive('/profile')}">
-                <i class="fas fa-user-circle"></i>
-                &nbsp;{{ authService.currentUser.username || 'Profile' }}
+        <!-- Nav links -->
+        <div class="navbar-links" ng-class="{open: menuOpen}">
+            <a href="#!/"       ng-class="{active: isActive('/')}"       ng-click="closeMenu()">Home</a>
+            <a href="#!/movies" ng-class="{active: isActive('/movies')}"  ng-click="closeMenu()">Films</a>
+            <a href="#!/watchlist" ng-show="authService.isLoggedIn()" ng-class="{active: isActive('/watchlist')}" ng-click="closeMenu()">Watchlist</a>
+            <a href="#!/diary"     ng-show="authService.isLoggedIn()" ng-class="{active: isActive('/diary')}"     ng-click="closeMenu()">Diary</a>
+            <a href="#!/lists"     ng-show="authService.isLoggedIn()" ng-class="{active: isActive('/lists')}"     ng-click="closeMenu()">Lists</a>
+            <a href="#!/profile"   ng-show="authService.isLoggedIn()" ng-class="{active: isActive('/profile')}"   ng-click="closeMenu()">
+                <i class="fas fa-user-circle"></i>&nbsp;{{ authService.currentUser.username || 'Profile' }}
             </a>
             <button class="btn btn-ghost" style="font-size:13px"
                     ng-show="authService.isLoggedIn()"
-                    ng-click="logout()">Sign Out</button>
+                    ng-click="logout(); closeMenu()">Sign Out</button>
+            <a href="#!/login" class="btn-nav-auth" ng-hide="authService.isLoggedIn()" ng-click="closeMenu()">Sign In</a>
 
-            <a href="#!/login" class="btn-nav-auth" ng-hide="authService.isLoggedIn()">Sign In</a>
+            <!-- Mobile search bar inside menu -->
+            <div class="mobile-search-bar" ng-show="menuOpen">
+                <div class="navbar-search mobile-inline-search" ng-class="{open: showDropdown}">
+                    <i class="fas fa-search search-icon" ng-hide="searching"></i>
+                    <i class="fas fa-spinner fa-spin search-icon" ng-show="searching"></i>
+                    <input type="text"
+                        ng-model="searchQuery"
+                        ng-change="onSearchChange()"
+                        ng-focus="onFocus()"
+                        ng-keydown="onKeydown($event)"
+                        placeholder="Search any film..."
+                        autocomplete="off">
+                    <button class="search-clear" ng-show="searchQuery" ng-click="clearSearch()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
         </div>
+
+        <!-- Mobile menu backdrop -->
+        <div class="menu-backdrop" ng-show="menuOpen" ng-click="closeMenu()"></div>
     </nav>
 
     <!-- ROUTER VIEW -->
@@ -112,7 +139,7 @@
             <p>
                 <span>MyMovieMania</span> &mdash; Powered by
                 <a href="https://www.themoviedb.org" target="_blank">TMDB</a>
-                &nbsp;&middot;&nbsp; Built with AngularJS + NodeJS + MySQL
+                &nbsp;&middot;&nbsp; Built with AngularJS + PHP + MySQL
             </p>
         </div>
     </footer>
