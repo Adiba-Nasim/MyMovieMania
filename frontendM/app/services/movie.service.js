@@ -6,17 +6,15 @@ angular.module('MyMovieMania')
 
 // API URL constants
 .constant('API', {
-    // Auto-switch between local (Node.js) and Vercel production
-    BASE       : window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-                 ? 'http://localhost:3000/api/'
-                 : window.location.origin + '/api/',
+    BASE: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+          ? 'http://localhost:3000/api/'
+          : 'https://mymoviemania.onrender.com/api/',
     IMG_W500   : 'https://image.tmdb.org/t/p/w500',
     IMG_W780   : 'https://image.tmdb.org/t/p/w780',
     IMG_ORIG   : 'https://image.tmdb.org/t/p/original',
     IMG_W185   : 'https://image.tmdb.org/t/p/w185',
     PLACEHOLDER: 'https://via.placeholder.com/500x750?text=No+Poster'
 })
-
 .factory('MovieService', ['$http', 'API', function($http, API) {
 
     var svc = {};
