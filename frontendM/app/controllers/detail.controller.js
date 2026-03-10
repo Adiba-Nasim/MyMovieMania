@@ -161,6 +161,18 @@ function($scope, $location, AuthService) {
     $scope.loading      = false;
     $scope.showPassword = false;
 
+    $scope.togglePassword = function(inputId) {
+        var input = document.getElementById(inputId);
+        if (!input) return;
+        if (input.type === 'password') {
+            input.type = 'text';
+            $scope.showPassword = true;
+        } else {
+            input.type = 'password';
+            $scope.showPassword = false;
+        }
+    };
+
     // Client-side validation before hitting backend
     function validateRegister() {
         var f = $scope.form;

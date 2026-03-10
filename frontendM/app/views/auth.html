@@ -51,20 +51,14 @@
                 <label>Password</label>
                 <div style="position:relative">
                     <input type="password"
-                           ng-hide="showPassword"
-                           ng-model="form.password"
-                           ng-change="clearFieldError('password')"
-                           placeholder="At least 6 characters"
-                           autocomplete="new-password">
-                    <input type="text"
-                           ng-show="showPassword"
+                           id="registerPassword"
                            ng-model="form.password"
                            ng-change="clearFieldError('password')"
                            placeholder="At least 6 characters"
                            autocomplete="new-password">
                     <button type="button"
                             style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:14px"
-                            ng-click="showPassword = !showPassword">
+                            ng-click="togglePassword('registerPassword')">
                         <i ng-class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
                     </button>
                 </div>
@@ -104,20 +98,14 @@
                 <label>Password</label>
                 <div style="position:relative">
                     <input type="password"
-                           ng-hide="showPassword"
-                           ng-model="form.password"
-                           ng-change="clearFieldError('password')"
-                           placeholder="Your password"
-                           autocomplete="current-password">
-                    <input type="text"
-                           ng-show="showPassword"
+                           id="loginPassword"
                            ng-model="form.password"
                            ng-change="clearFieldError('password')"
                            placeholder="Your password"
                            autocomplete="current-password">
                     <button type="button"
                             style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:14px"
-                            ng-click="showPassword = !showPassword">
+                            ng-click="togglePassword('loginPassword')">
                         <i ng-class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
                     </button>
                 </div>
