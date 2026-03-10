@@ -305,7 +305,7 @@ function($scope, $location, $http, AuthService, LibraryService, API) {
         $scope.saving    = true;
         $scope.saveError = '';
 
-        $http.post(API.BASE + 'auth.php?action=updateProfile',
+        $http.post(API.BASE + 'auth/updateProfile',
             { username: $scope.editForm.username, bio: $scope.editForm.bio },
             AuthService.getHeaders()
         ).then(function(res) {

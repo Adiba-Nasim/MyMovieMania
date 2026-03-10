@@ -57,6 +57,10 @@ angular.module('MyMovieMania')
             });
     };
 
+    service.updateProfile = function(data) {
+        return $http.post(API.BASE + 'auth/updateProfile', data, service.getHeaders());
+    };
+
     // Auto-fetch on load
     if (service.token) service.fetchMe();
 
