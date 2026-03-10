@@ -8,8 +8,8 @@ angular.module('MyMovieMania')
 .constant('API', {
     // Auto-switch between local and production
     BASE       : window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-                 ? 'http://localhost/mymoviemania/backend/api/'
-                 : 'https://YOUR_INFINITYFREE_SUBDOMAIN.infinityfreeapp.com/api/',
+                 ? 'http://localhost:3000/api/'
+                 : 'https://mymoviemania.onrender.com/api/',
     IMG_W500   : 'https://image.tmdb.org/t/p/w500',
     IMG_W780   : 'https://image.tmdb.org/t/p/w780',
     IMG_ORIG   : 'https://image.tmdb.org/t/p/original',
