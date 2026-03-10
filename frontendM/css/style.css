@@ -1484,3 +1484,35 @@ textarea:focus {
     .navbar > .btn-nav-auth { display: none !important; }
     .navbar-links { overflow-x: hidden; }
 }
+
+/* Desktop Sign In — hide on mobile (mobile has its own) */
+@media (max-width: 768px) {
+    .desktop-signin { display: none !important; }
+}
+
+/* ── Diary View All ─────────────────────── */
+.diary-section-header {
+    display        : flex;
+    justify-content: space-between;
+    align-items    : center;
+    font-size      : 1.2rem;
+    font-weight    : 600;
+    color          : var(--text-primary);
+    margin-bottom  : 20px;
+}
+.diary-view-all {
+    font-size   : 13px;
+    color       : var(--gold);
+    font-weight : 500;
+    transition  : opacity 0.2s;
+}
+.diary-view-all:hover { opacity: 0.75; }
+.diary-view-all-bar {
+    text-align  : center;
+    margin-top  : 20px;
+    padding-top : 16px;
+    border-top  : 1px solid var(--border);
+}
+.watched-grid-full {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important;
+}

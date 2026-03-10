@@ -165,18 +165,53 @@ router.get('/reviews.getByMovie', optionalAuth, async (req, res) => {
 router.post('/reviews.add', getUserFromToken, async (req, res) => {
     try {
         const { tmdb_id, movie_title, poster_path, rating, review_text, liked } = req.body;
+        const userId = req.user.id;
+
+        // Get existing rating+liked for this movie (if any previous review exists)
+        const [existing] = await db.execute(
+            'SELECT rating, liked FROM reviews WHERE user_id = ? AND tmdb_id = ? ORDER BY created_at ASC LIMIT 1',
+            [userId, tmdb_id]
+        );
+
+        // Use new rating/liked if provided, otherwise keep existing
+        const finalRating = (rating !== undefined && rating !== null) ? rating : (existing[0] ? existing[0].rating : null);
+        const finalLiked  = (liked  !== undefined && liked  !== null) ? (liked ? 1 : 0) : (existing[0] ? existing[0].liked : 0);
+
+        // Update ALL previous reviews for this movie to reflect new rating+liked
+        if (existing.length > 0 && (rating !== undefined || liked !== undefined)) {
+            await db.execute(
+                'UPDATE reviews SET rating = ?, liked = ? WHERE user_id = ? AND tmdb_id = ?',
+                [finalRating, finalLiked, userId, tmdb_id]
+            );
+        }
+
+        // Insert new review row (always allows multiple review texts)
         const [result] = await db.execute(
             `INSERT INTO reviews (user_id, tmdb_id, movie_title, poster_path, rating, review_text, liked)
-             VALUES (?, ?, ?, ?, ?, ?, ?)
-             ON DUPLICATE KEY UPDATE
-             rating = VALUES(rating),
-             review_text = VALUES(review_text),
-             liked = VALUES(liked)`,
-            [req.user.id, tmdb_id, movie_title, poster_path || '', rating, review_text || '', liked ? 1 : 0]
+             VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [userId, tmdb_id, movie_title, poster_path || '', finalRating, review_text || '', finalLiked]
         );
         res.json({ success: true, id: result.insertId });
     } catch (err) {
         res.status(500).json({ error: 'Failed to save review' });
+    }
+});
+
+// GET user's rating+liked for a specific movie
+router.get('/reviews.myrating', getUserFromToken, async (req, res) => {
+    try {
+        const { tmdb_id } = req.query;
+        const [rows] = await db.execute(
+            'SELECT rating, liked FROM reviews WHERE user_id = ? AND tmdb_id = ? ORDER BY created_at ASC LIMIT 1',
+            [req.user.id, tmdb_id]
+        );
+        if (rows.length > 0) {
+            res.json({ exists: true, rating: rows[0].rating, liked: rows[0].liked });
+        } else {
+            res.json({ exists: false, rating: 3, liked: 0 });
+        }
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch rating' });
     }
 });
 

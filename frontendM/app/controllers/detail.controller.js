@@ -124,6 +124,16 @@ function($scope, $routeParams, MovieService, LibraryService, AuthService) {
 
     // Modal controls
     $scope.openReviewModal = function() {
+        // Pre-fill rating+liked from existing review for this movie
+        if (AuthService.isLoggedIn()) {
+            LibraryService.getMyRating(id).then(function(res) {
+                $scope.newReview.rating = res.data.rating || 3;
+                $scope.newReview.liked  = res.data.liked  == 1;
+            }).catch(function() {
+                $scope.newReview = { rating: 3, review_text: '', liked: false };
+            });
+        }
+        $scope.newReview.review_text = ''; // always clear text for new review
         $scope.showReviewForm = true;
         document.body.style.overflow = 'hidden';
     };
@@ -347,6 +357,44 @@ function($scope, $location, LibraryService, AuthService) {
         return path
             ? 'https://image.tmdb.org/t/p/w185' + path
             : 'https://via.placeholder.com/185x278?text=?';
+    };
+}])
+
+// ---- DIARY REVIEWS (full page) ----
+.controller('DiaryReviewsCtrl', ['$scope', '$location', 'LibraryService', 'AuthService',
+function($scope, $location, LibraryService, AuthService) {
+    if (!AuthService.isLoggedIn()) { $location.path('/login'); return; }
+    $scope.reviews = [];
+    $scope.loading = true;
+    LibraryService.getMyReviews().then(function(res) {
+        $scope.reviews = res.data || [];
+        $scope.loading = false;
+    }).catch(function() { $scope.loading = false; });
+
+    $scope.deleteReview = function(id) {
+        if (!confirm('Delete this review?')) return;
+        LibraryService.deleteReview(id).then(function() {
+            $scope.reviews = $scope.reviews.filter(function(r) { return r.id !== id; });
+        });
+    };
+    $scope.posterUrl = function(path) {
+        return path ? 'https://image.tmdb.org/t/p/w185' + path : 'https://via.placeholder.com/185x278?text=?';
+    };
+}])
+
+// ---- DIARY WATCHED (full page) ----
+.controller('DiaryWatchedCtrl', ['$scope', '$location', 'LibraryService', 'AuthService',
+function($scope, $location, LibraryService, AuthService) {
+    if (!AuthService.isLoggedIn()) { $location.path('/login'); return; }
+    $scope.watched = [];
+    $scope.loading = true;
+    LibraryService.getWatched().then(function(res) {
+        $scope.watched = res.data || [];
+        $scope.loading = false;
+    }).catch(function() { $scope.loading = false; });
+
+    $scope.posterUrl = function(path) {
+        return path ? 'https://image.tmdb.org/t/p/w185' + path : 'https://via.placeholder.com/185x278?text=?';
     };
 }])
 

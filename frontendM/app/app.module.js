@@ -39,6 +39,18 @@ angular.module('MyMovieMania', ['ngRoute', 'ngAnimate'])
             title       : 'My Diary',
             requireAuth : true
         })
+        .when('/diary/reviews', {
+            templateUrl : 'app/views/diary-reviews.html',
+            controller  : 'DiaryReviewsCtrl',
+            title       : 'All Reviews',
+            requireAuth : true
+        })
+        .when('/diary/watched', {
+            templateUrl : 'app/views/diary-watched.html',
+            controller  : 'DiaryWatchedCtrl',
+            title       : 'All Watched Films',
+            requireAuth : true
+        })
         .when('/watchlist', {
             templateUrl : 'app/views/watchlist.html',
             controller  : 'WatchlistCtrl',

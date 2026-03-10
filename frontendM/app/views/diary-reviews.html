@@ -1,0 +1,41 @@
+<!-- ============ frontend/app/views/diary-reviews.html ============ -->
+<div class="container" style="padding-top:36px">
+
+    <div class="diary-section-header" style="margin-bottom:28px">
+        <span>
+            <a href="#!/diary" style="color:var(--text-muted);font-size:14px">
+                <i class="fas fa-arrow-left"></i> Back to Diary
+            </a>
+        </span>
+    </div>
+
+    <div class="section-header" style="margin-bottom:28px">
+        <h2 style="font-size:1.8rem">
+            <i class="fas fa-star" style="color:var(--gold)"></i> All My Reviews
+            <span class="diary-section-count" style="font-size:1rem;margin-left:10px">{{ reviews.length }}</span>
+        </h2>
+    </div>
+
+    <div class="spinner" ng-if="loading"><div class="spinner-ring"></div></div>
+
+    <div ng-if="!loading">
+        <p ng-if="!reviews.length" class="diary-empty">
+            No reviews yet. <a href="#!/movies">Watch a film and write your first review →</a>
+        </p>
+        <div class="diary-item" ng-repeat="r in reviews">
+            <img class="diary-poster" ng-src="{{ posterUrl(r.poster_path) }}" alt="{{ r.movie_title }}">
+            <div class="diary-info" style="flex:1">
+                <div class="diary-title">
+                    <a href="#!/movie/{{ r.tmdb_id }}">{{ r.movie_title }}</a>
+                    <i class="fas fa-heart" style="color:var(--red); margin-left:8px" ng-if="r.liked == 1"></i>
+                </div>
+                <div class="diary-date">{{ r.created_at | date:'MMMM d, y' }}</div>
+                <div style="color:var(--gold); font-size:14px; margin-bottom:8px" ng-if="r.rating">★ {{ r.rating }} / 5</div>
+                <p class="diary-review-text" ng-if="r.review_text">{{ r.review_text }}</p>
+            </div>
+            <button class="btn btn-danger" style="align-self:flex-start" ng-click="deleteReview(r.id)">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    </div>
+</div>

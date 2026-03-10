@@ -1,0 +1,32 @@
+<!-- ============ frontend/app/views/diary-watched.html ============ -->
+<div class="container" style="padding-top:36px">
+
+    <div style="margin-bottom:20px">
+        <a href="#!/diary" style="color:var(--text-muted);font-size:14px">
+            <i class="fas fa-arrow-left"></i> Back to Diary
+        </a>
+    </div>
+
+    <div class="section-header" style="margin-bottom:28px">
+        <h2 style="font-size:1.8rem">
+            <i class="fas fa-eye" style="color:var(--gold)"></i> All Watched Films
+            <span class="diary-section-count" style="font-size:1rem;margin-left:10px">{{ watched.length }}</span>
+        </h2>
+    </div>
+
+    <div class="spinner" ng-if="loading"><div class="spinner-ring"></div></div>
+
+    <div ng-if="!loading">
+        <p ng-if="!watched.length" class="diary-empty">
+            No watched films yet. <a href="#!/movies">Start watching →</a>
+        </p>
+        <div class="watched-grid watched-grid-full">
+            <a class="watched-card" href="#!/movie/{{ w.tmdb_id }}" ng-repeat="w in watched">
+                <img ng-src="{{ posterUrl(w.poster_path) }}" alt="{{ w.movie_title }}">
+                <div class="watched-card-overlay"><i class="fas fa-check-circle"></i></div>
+                <div class="watched-card-title">{{ w.movie_title }}</div>
+                <div class="watched-card-date">{{ w.watched_at | date:'MMM y' }}</div>
+            </a>
+        </div>
+    </div>
+</div>
