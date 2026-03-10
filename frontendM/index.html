@@ -80,31 +80,36 @@
         <!-- Backdrop -->
         <div class="search-backdrop" ng-show="showDropdown" ng-click="closeDropdown()"></div>
 
-        <!-- Mobile right side: search icon + hamburger -->
-        <div class="mobile-nav-right">
+        <!-- Mobile: search icon (always) + hamburger (logged in only) -->
+        <div class="mobile-nav-right" style="margin-left:auto">
             <a href="#!/search" class="mobile-search-btn">
                 <i class="fas fa-search"></i>
             </a>
-            <button class="hamburger" ng-click="toggleMenu()" ng-class="{open: menuOpen}">
+            <!-- Hamburger only when logged in -->
+            <button class="hamburger" ng-show="authService.isLoggedIn()" ng-click="toggleMenu()" ng-class="{open: menuOpen}">
                 <span></span><span></span><span></span>
             </button>
+            <!-- Inline Sign In when logged out -->
+            <a href="#!/login" class="btn-nav-auth mobile-signin" ng-hide="authService.isLoggedIn()">Sign In</a>
         </div>
 
-        <!-- Nav links -->
-        <div class="navbar-links" ng-class="{open: menuOpen}">
-            <a href="#!/"       ng-class="{active: isActive('/')}"       ng-click="closeMenu()">Home</a>
-            <a href="#!/movies" ng-class="{active: isActive('/movies')}"  ng-click="closeMenu()">Films</a>
-            <a href="#!/watchlist" ng-show="authService.isLoggedIn()" ng-class="{active: isActive('/watchlist')}" ng-click="closeMenu()">Watchlist</a>
-            <a href="#!/diary"     ng-show="authService.isLoggedIn()" ng-class="{active: isActive('/diary')}"     ng-click="closeMenu()">Diary</a>
-            <a href="#!/lists"     ng-show="authService.isLoggedIn()" ng-class="{active: isActive('/lists')}"     ng-click="closeMenu()">Lists</a>
-            <a href="#!/profile"   ng-show="authService.isLoggedIn()" ng-class="{active: isActive('/profile')}"   ng-click="closeMenu()">
+        <!-- Logged OUT: simple inline links (Home, Films) -->
+        <div class="navbar-links navbar-links-guest" ng-hide="authService.isLoggedIn()">
+            <a href="#!/"       ng-class="{active: isActive('/')}">Home</a>
+            <a href="#!/movies" ng-class="{active: isActive('/movies')}">Films</a>
+        </div>
+
+        <!-- Logged IN: hamburger slide-down menu -->
+        <div class="navbar-links navbar-links-user" ng-show="authService.isLoggedIn()" ng-class="{open: menuOpen}">
+            <a href="#!/"          ng-class="{active: isActive('/')}"          ng-click="closeMenu()">Home</a>
+            <a href="#!/movies"    ng-class="{active: isActive('/movies')}"     ng-click="closeMenu()">Films</a>
+            <a href="#!/watchlist" ng-class="{active: isActive('/watchlist')}"  ng-click="closeMenu()">Watchlist</a>
+            <a href="#!/diary"     ng-class="{active: isActive('/diary')}"      ng-click="closeMenu()">Diary</a>
+            <a href="#!/lists"     ng-class="{active: isActive('/lists')}"      ng-click="closeMenu()">Lists</a>
+            <a href="#!/profile"   ng-class="{active: isActive('/profile')}"    ng-click="closeMenu()">
                 <i class="fas fa-user-circle"></i>&nbsp;{{ authService.currentUser.username || 'Profile' }}
             </a>
-            <button class="btn btn-ghost" style="font-size:13px"
-                    ng-show="authService.isLoggedIn()"
-                    ng-click="logout(); closeMenu()">Sign Out</button>
-            <a href="#!/login" class="btn-nav-auth" ng-hide="authService.isLoggedIn()" ng-click="closeMenu()">Sign In</a>
-
+            <button class="btn btn-ghost" style="font-size:13px" ng-click="logout(); closeMenu()">Sign Out</button>
             <!-- Mobile search bar inside menu -->
             <div class="mobile-search-bar" ng-show="menuOpen">
                 <div class="navbar-search mobile-inline-search" ng-class="{open: showDropdown}">

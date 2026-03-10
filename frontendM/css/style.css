@@ -951,12 +951,43 @@ footer span { color: var(--gold); }
     .navbar-search:not(.mobile-inline-search) { display: none; }
 
     /* Show mobile right side */
-    .mobile-nav-right { display: flex; }
+    .mobile-nav-right { display: flex; align-items: center; gap: 8px; }
     .hamburger        { display: flex; }
     .menu-backdrop    { display: block; }
 
-    /* Slide-down mobile menu */
-    .navbar-links {
+    /* Guest nav — inline Home + Films in navbar */
+    .navbar-links-guest {
+        display       : flex !important;
+        position      : static !important;
+        transform     : none !important;
+        background    : none !important;
+        border        : none !important;
+        padding       : 0 !important;
+        flex-direction: row !important;
+        align-items   : center !important;
+        gap           : 4px !important;
+        pointer-events: all !important;
+        margin-left   : 0 !important;
+    }
+    .navbar-links-guest a {
+        width        : auto !important;
+        padding      : 6px 10px !important;
+        font-size    : 13px !important;
+        border-bottom: none !important;
+        border-radius: 6px !important;
+    }
+
+    /* Sign In button inline on mobile (guest) */
+    .mobile-signin {
+        display       : inline-block !important;
+        padding       : 6px 14px !important;
+        font-size     : 13px !important;
+        border-radius : 999px !important;
+        white-space   : nowrap;
+    }
+
+    /* Logged-in slide-down menu */
+    .navbar-links-user {
         position      : fixed;
         top           : var(--navbar-h);
         left          : 0;
@@ -974,26 +1005,20 @@ footer span { color: var(--gold); }
         pointer-events: none;
         margin-left   : 0 !important;
     }
-    .navbar-links.open {
+    .navbar-links-user.open {
         transform     : translateY(0);
         pointer-events: all;
     }
-    .navbar-links a,
-    .navbar-links button {
-        width      : 100%;
-        padding    : 12px 8px;
-        font-size  : 15px;
+    .navbar-links-user a,
+    .navbar-links-user button {
+        width        : 100%;
+        padding      : 12px 8px;
+        font-size    : 15px;
         border-bottom: 1px solid var(--border);
         border-radius: 0;
-        text-align : left;
+        text-align   : left;
     }
-    .navbar-links a:last-of-type { border-bottom: none; }
-    .btn-nav-auth {
-        margin-top    : 8px;
-        text-align    : center !important;
-        border-radius : 8px !important;
-        width         : 100% !important;
-    }
+    .navbar-links-user a:last-of-type { border-bottom: none; }
 
     /* Page adjustments */
     .detail-main   { flex-direction: column; padding: 24px; }
@@ -1282,4 +1307,180 @@ textarea:focus {
 
 .auth-switch a:hover {
     text-decoration: underline;
+}
+
+/* ══════════════════════════════════════
+   DIARY TABS
+══════════════════════════════════════ */
+.diary-tabs {
+    display       : flex;
+    gap           : 8px;
+    margin-bottom : 28px;
+    border-bottom : 1px solid var(--border);
+    padding-bottom: 0;
+}
+.diary-tab {
+    background    : none;
+    border        : none;
+    color         : var(--text-muted);
+    font-size     : 15px;
+    font-weight   : 500;
+    padding       : 10px 20px;
+    cursor        : pointer;
+    border-bottom : 2px solid transparent;
+    margin-bottom : -1px;
+    transition    : all 0.2s;
+    display       : flex;
+    align-items   : center;
+    gap           : 8px;
+}
+.diary-tab:hover  { color: var(--text-primary); }
+.diary-tab.active {
+    color         : var(--gold);
+    border-bottom : 2px solid var(--gold);
+}
+.diary-tab-count {
+    background    : var(--bg-card);
+    color         : var(--text-muted);
+    font-size     : 11px;
+    padding       : 2px 7px;
+    border-radius : 999px;
+}
+.diary-tab.active .diary-tab-count {
+    background    : rgba(232,184,75,0.15);
+    color         : var(--gold);
+}
+
+/* ══════════════════════════════════════
+   WATCHED GRID
+══════════════════════════════════════ */
+.watched-grid {
+    display              : grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap                  : 16px;
+}
+.watched-card {
+    position      : relative;
+    border-radius : 8px;
+    overflow      : hidden;
+    cursor        : pointer;
+    transition    : transform 0.2s;
+}
+.watched-card:hover { transform: translateY(-4px); }
+.watched-card img {
+    width         : 100%;
+    aspect-ratio  : 2/3;
+    object-fit    : cover;
+    display       : block;
+}
+.watched-card-overlay {
+    position      : absolute;
+    top           : 6px;
+    right         : 6px;
+    color         : var(--gold);
+    font-size     : 18px;
+    text-shadow   : 0 0 6px rgba(0,0,0,0.8);
+}
+.watched-card-title {
+    font-size     : 11px;
+    color         : var(--text-primary);
+    margin-top    : 6px;
+    text-align    : center;
+    white-space   : nowrap;
+    overflow      : hidden;
+    text-overflow : ellipsis;
+    padding       : 0 4px;
+}
+.watched-card-date {
+    font-size     : 10px;
+    color         : var(--text-muted);
+    text-align    : center;
+    margin-bottom : 4px;
+}
+
+/* ══════════════════════════════════════
+   DIARY SECTIONS
+══════════════════════════════════════ */
+.diary-section {
+    margin-bottom : 8px;
+}
+.diary-section-header {
+    font-size     : 1.2rem;
+    font-weight   : 600;
+    color         : var(--text-primary);
+    display       : flex;
+    align-items   : center;
+    gap           : 10px;
+    margin-bottom : 20px;
+}
+.diary-section-count {
+    background    : rgba(232,184,75,0.15);
+    color         : var(--gold);
+    font-size     : 12px;
+    font-weight   : 600;
+    padding       : 2px 9px;
+    border-radius : 999px;
+}
+.diary-divider {
+    border        : none;
+    border-top    : 1px solid var(--border);
+    margin        : 36px 0;
+}
+.diary-empty {
+    color         : var(--text-muted);
+    text-align    : center;
+    padding       : 40px 0;
+}
+
+/* ══════════════════════════════════════
+   WATCHED GRID
+══════════════════════════════════════ */
+.watched-grid {
+    display              : grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap                  : 16px;
+}
+.watched-card {
+    position      : relative;
+    border-radius : 8px;
+    overflow      : hidden;
+    cursor        : pointer;
+    transition    : transform 0.2s;
+}
+.watched-card:hover { transform: translateY(-4px); }
+.watched-card img {
+    width         : 100%;
+    aspect-ratio  : 2/3;
+    object-fit    : cover;
+    display       : block;
+}
+.watched-card-overlay {
+    position      : absolute;
+    top           : 6px;
+    right         : 6px;
+    color         : var(--gold);
+    font-size     : 18px;
+    text-shadow   : 0 0 6px rgba(0,0,0,0.8);
+}
+.watched-card-title {
+    font-size     : 11px;
+    color         : var(--text-primary);
+    margin-top    : 6px;
+    text-align    : center;
+    white-space   : nowrap;
+    overflow      : hidden;
+    text-overflow : ellipsis;
+    padding       : 0 4px;
+}
+.watched-card-date {
+    font-size     : 10px;
+    color         : var(--text-muted);
+    text-align    : center;
+    margin-bottom : 4px;
+}
+
+@media (max-width: 768px) {
+    /* Hide desktop sign in — only show inside hamburger menu */
+    .navbar > .btn-nav-auth { display: none !important; }
+    .navbar-links { overflow-x: hidden; }
 }

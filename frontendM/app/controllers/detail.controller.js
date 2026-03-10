@@ -318,14 +318,23 @@ function($scope, $location, LibraryService, AuthService) {
 
     if (!AuthService.isLoggedIn()) { $location.path('/login'); return; }
 
-    $scope.reviews = [];
-    $scope.loading = true;
+    $scope.reviews    = [];
+    $scope.watched    = [];
+    $scope.loading    = true;
+    $scope.activeTab  = 'reviews'; // 'reviews' or 'watched'
+
+    $scope.setTab = function(tab) { $scope.activeTab = tab; };
 
     function load() {
-        LibraryService.getMyReviews().then(function(res) {
+        var p1 = LibraryService.getMyReviews().then(function(res) {
             $scope.reviews = res.data || [];
-            $scope.loading = false;
-        }).catch(function() { $scope.loading = false; });
+        }).catch(function() { $scope.reviews = []; });
+
+        var p2 = LibraryService.getWatched().then(function(res) {
+            $scope.watched = res.data || [];
+        }).catch(function() { $scope.watched = []; });
+
+        Promise.all([p1, p2]).then(function() { $scope.loading = false; $scope.$apply(); });
     }
     load();
 
