@@ -15,7 +15,7 @@
                 <span><i class="fas fa-star" style="color:var(--gold)"></i> My Reviews</span>
                 <span style="display:flex;align-items:center;gap:12px">
                     <span class="diary-section-count">{{ reviews.length }}</span>
-                    <a href="#!/diary/reviews" class="diary-view-all" ng-if="reviews.length > 5">
+                    <a href="#!/diary/reviews" class="diary-view-all" ng-if="reviews.length > 3">
                         View All <i class="fas fa-arrow-right"></i>
                     </a>
                 </span>
@@ -25,7 +25,7 @@
                 No reviews yet. <a href="#!/movies">Watch a film and write your first review →</a>
             </p>
 
-            <div class="diary-item" ng-repeat="r in reviews | limitTo:5">
+            <div class="diary-item" ng-repeat="r in reviews | limitTo:3">
                 <img class="diary-poster" ng-src="{{ posterUrl(r.poster_path) }}" alt="{{ r.movie_title }}">
                 <div class="diary-info" style="flex:1">
                     <div class="diary-title">
