@@ -4,9 +4,7 @@
 
 angular.module('MyMovieMania')
 
-// API URL constants
 .constant('API', {
-    // Auto-switch between local and production
     BASE       : window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
                  ? 'http://localhost:3000/api/'
                  : 'https://mymoviemania.onrender.com/api/',
@@ -18,18 +16,18 @@ angular.module('MyMovieMania')
 })
 
 .factory('MovieService', ['$http', 'API', function($http, API) {
-
     var svc = {};
+    var M = API.BASE + 'movies/';
 
-    svc.getTrending   = (page=1) => $http.get(API.BASE + `movies.php?action=trending&page=${page}`);
-    svc.getPopular    = (page=1) => $http.get(API.BASE + `movies.php?action=popular&page=${page}`);
-    svc.getUpcoming   = (page=1) => $http.get(API.BASE + `movies.php?action=upcoming&page=${page}`);
-    svc.getTopRated   = (page=1) => $http.get(API.BASE + `movies.php?action=toprated&page=${page}`);
-    svc.getNowPlaying = (page=1) => $http.get(API.BASE + `movies.php?action=nowplaying&page=${page}`);
-    svc.search        = (q,page=1) => $http.get(API.BASE + `movies.php?action=search&query=${encodeURIComponent(q)}&page=${page}`);
-    svc.getDetail     = (id)       => $http.get(API.BASE + `movies.php?action=detail&id=${id}`);
-    svc.getGenres     = ()         => $http.get(API.BASE + 'movies.php?action=genres');
-    svc.getByGenre    = (gid,page=1)=> $http.get(API.BASE + `movies.php?action=bygenre&genre_id=${gid}&page=${page}`);
+    svc.getTrending   = (page=1)    => $http.get(M + `trending?page=${page}`);
+    svc.getPopular    = (page=1)    => $http.get(M + `popular?page=${page}`);
+    svc.getUpcoming   = (page=1)    => $http.get(M + `upcoming?page=${page}`);
+    svc.getTopRated   = (page=1)    => $http.get(M + `toprated?page=${page}`);
+    svc.getNowPlaying = (page=1)    => $http.get(M + `nowplaying?page=${page}`);
+    svc.search        = (q,page=1)  => $http.get(M + `search?query=${encodeURIComponent(q)}&page=${page}`);
+    svc.getDetail     = (id)        => $http.get(M + `detail?id=${id}`);
+    svc.getGenres     = ()          => $http.get(M + 'genres');
+    svc.getByGenre    = (gid,page=1)=> $http.get(M + `bygenre?genre_id=${gid}&page=${page}`);
 
     svc.posterUrl = function(path, size) {
         if (!path) return API.PLACEHOLDER;
@@ -41,7 +39,6 @@ angular.module('MyMovieMania')
     };
 
     svc.ratingStars = function(rating) {
-        // Convert 0-10 TMDB rating to 0-5
         return (rating / 2).toFixed(1);
     };
 
@@ -49,46 +46,43 @@ angular.module('MyMovieMania')
 }])
 
 .factory('LibraryService', ['$http', 'API', 'AuthService', function($http, API, AuthService) {
-
     var svc = {};
-
     var h = function() { return AuthService.getHeaders(); };
-    var B = API.BASE + 'library.php';
+    var B = API.BASE + 'library/';
 
     // Watchlist
-    svc.getWatchlist      = ()     => $http.get(B + '?action=watchlist.get', h());
-    svc.addToWatchlist    = (data) => $http.post(B + '?action=watchlist.add', data, h());
-    svc.removeWatchlist   = (tmdb) => $http.delete(B + `?action=watchlist.remove&tmdb_id=${tmdb}`, h());
-    svc.checkWatchlist    = (tmdb) => $http.get(B + `?action=watchlist.check&tmdb_id=${tmdb}`, h());
+    svc.getWatchlist      = ()     => $http.get(B + 'watchlist.get', h());
+    svc.addToWatchlist    = (data) => $http.post(B + 'watchlist.add', data, h());
+    svc.removeWatchlist   = (tmdb) => $http.delete(B + `watchlist.remove?tmdb_id=${tmdb}`, h());
+    svc.checkWatchlist    = (tmdb) => $http.get(B + `watchlist.check?tmdb_id=${tmdb}`, h());
 
     // Watched
-    svc.getWatched        = ()     => $http.get(B + '?action=watched.get', h());
-    svc.markWatched       = (data) => $http.post(B + '?action=watched.add', data, h());
-    svc.removeWatched     = (tmdb) => $http.delete(B + `?action=watched.remove&tmdb_id=${tmdb}`, h());
-    svc.checkWatched      = (tmdb) => $http.get(B + `?action=watched.check&tmdb_id=${tmdb}`, h());
+    svc.getWatched        = ()     => $http.get(B + 'watched.get', h());
+    svc.markWatched       = (data) => $http.post(B + 'watched.add', data, h());
+    svc.removeWatched     = (tmdb) => $http.delete(B + `watched.remove?tmdb_id=${tmdb}`, h());
+    svc.checkWatched      = (tmdb) => $http.get(B + `watched.check?tmdb_id=${tmdb}`, h());
 
     // Reviews
-    svc.getMyReviews      = ()     => $http.get(B + '?action=reviews.get', h());
-    svc.getMyRating       = (tmdb) => $http.get(B.replace('library.php', 'library/reviews.myrating') + `?tmdb_id=${tmdb}`, h());
-    svc.getMovieReviews   = (tmdb) => $http.get(B + `?action=reviews.getByMovie&tmdb_id=${tmdb}`, h());
-    svc.addReview         = (data) => $http.post(B + '?action=reviews.add', data, h());
-    svc.deleteReview      = (id)   => $http.delete(B + `?action=reviews.delete&review_id=${id}`, h());
+    svc.getMyReviews      = ()     => $http.get(B + 'reviews.get', h());
+    svc.getMyRating       = (tmdb) => $http.get(B + `reviews.myrating?tmdb_id=${tmdb}`, h());
+    svc.getMovieReviews   = (tmdb) => $http.get(B + `reviews.getByMovie?tmdb_id=${tmdb}`, h());
+    svc.addReview         = (data) => $http.post(B + 'reviews.add', data, h());
+    svc.deleteReview      = (id)   => $http.delete(B + `reviews.delete?review_id=${id}`, h());
 
     return svc;
 }])
 
 .factory('ListsService', ['$http', 'API', 'AuthService', function($http, API, AuthService) {
-
     var svc = {};
     var h   = function() { return AuthService.getHeaders(); };
-    var B   = API.BASE + 'lists.php';
+    var B   = API.BASE + 'lists/';
 
-    svc.getLists    = (uid)  => $http.get(B + (uid ? `?action=get&user_id=${uid}` : '?action=get'), h());
-    svc.getOne      = (id)   => $http.get(B + `?action=getOne&list_id=${id}`, h());
-    svc.createList  = (data) => $http.post(B + '?action=create', data, h());
-    svc.deleteList  = (id)   => $http.delete(B + `?action=delete&list_id=${id}`, h());
-    svc.addItem     = (data) => $http.post(B + '?action=addItem', data, h());
-    svc.removeItem  = (lid, tmdb) => $http.delete(B + `?action=removeItem&list_id=${lid}&tmdb_id=${tmdb}`, h());
+    svc.getLists    = (uid)       => $http.get(B + (uid ? `get?user_id=${uid}` : 'get'), h());
+    svc.getOne      = (id)        => $http.get(B + `getOne?list_id=${id}`, h());
+    svc.createList  = (data)      => $http.post(B + 'create', data, h());
+    svc.deleteList  = (id)        => $http.delete(B + `delete?list_id=${id}`, h());
+    svc.addItem     = (data)      => $http.post(B + 'addItem', data, h());
+    svc.removeItem  = (lid, tmdb) => $http.delete(B + `removeItem?list_id=${lid}&tmdb_id=${tmdb}`, h());
 
     return svc;
 }]);
