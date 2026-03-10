@@ -305,14 +305,12 @@ function($scope, $location, $http, AuthService, LibraryService, API) {
         $scope.saving    = true;
         $scope.saveError = '';
 
-        $http.post(API.BASE + 'auth/updateProfile',
-            { username: $scope.editForm.username, bio: $scope.editForm.bio },
-            AuthService.getHeaders()
+        AuthService.updateProfile(
+            { username: $scope.editForm.username, bio: $scope.editForm.bio }
         ).then(function(res) {
             $scope.saving      = false;
             $scope.saveSuccess = true;
             $scope.editMode    = false;
-            // Update local user object
             $scope.user.username = $scope.editForm.username;
             $scope.user.bio      = $scope.editForm.bio;
             AuthService.currentUser.username = $scope.editForm.username;
